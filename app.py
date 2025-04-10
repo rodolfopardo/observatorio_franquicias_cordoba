@@ -101,21 +101,32 @@ es_franquiciado = True if tipo_cluster == 'Candidatos (franquicias)' else False
 
 df_filtrado_tipo = df[df['es_franquiciado'] == es_franquiciado]
 
-marcas_disponibles = sorted(df_filtrado_tipo['title'].unique().tolist())
+# Marcas ordenadas por frecuencia
+marcas_disponibles = (
+    df_filtrado_tipo['title']
+    .value_counts()
+    .reset_index()
+    .rename(columns={'index': 'title'})
+    ['title']
+    .tolist()
+)
 marcas_seleccionadas = st.multiselect("Seleccioná una o más marcas", marcas_disponibles)
 if marcas_seleccionadas:
     df_filtrado = df_filtrado_tipo[df_filtrado_tipo['title'].isin(marcas_seleccionadas)]
 else:
     df_filtrado = df_filtrado_tipo.copy()
 
-# --- FILTRO POR KEYWORD ---
-keywords_disponibles = sorted(
+# Keywords ordenadas por frecuencia
+keywords_disponibles = (
     df_filtrado_tipo['keyword']
     .dropna()
     .astype(str)
     .str.strip()
     .str.lower()
-    .unique()
+    .value_counts()
+    .reset_index()
+    .rename(columns={'index': 'keyword'})
+    ['keyword']
     .tolist()
 )
 keywords_seleccionadas = st.multiselect("Filtrar por una o más keywords", keywords_disponibles)
