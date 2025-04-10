@@ -10,11 +10,12 @@ st.set_page_config(page_title="Observatorio de Franquicias – Córdoba", layout
 USUARIOS_VALIDOS = {
     "rodolfopardo": "1234",
     "jp": "1234",
-    "brian": "1234"
+    "brian": "1234",
+    "invitado": "searchmas"
 }
 
 def login():
-    st.image("search.mas-logo-blanco.png", width=200)
+    st.image("https://media.licdn.com/dms/image/v2/C4E0BAQEI7gHrMu33ug/company-logo_200_200/company-logo_200_200/0/1630567809960/search_mas_logo?e=1749686400&v=beta&t=gX3L1x9Yl9Xg8iASJ1_mil9GNfa6-hLM9JglCP2b3mo", width=200)
     st.title("🔐 Observatorio de Franquicias – Córdoba")
     user = st.text_input("Usuario")
     password = st.text_input("Contraseña", type="password")
@@ -33,7 +34,7 @@ if 'logged_in' not in st.session_state:
 # --- CARGA Y LIMPIEZA DE DATOS ---
 col_logo, col_title = st.columns([1, 5])
 with col_logo:
-    st.image("search.mas-logo-blanco.png", width=120)
+    st.image("https://media.licdn.com/dms/image/v2/C4E0BAQEI7gHrMu33ug/company-logo_200_200/company-logo_200_200/0/1630567809960/search_mas_logo?e=1749686400&v=beta&t=gX3L1x9Yl9Xg8iASJ1_mil9GNfa6-hLM9JglCP2b3mo", width=120)
 with col_title:
     st.title("📊 Observatorio de Franquicias – Córdoba")
 
