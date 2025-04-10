@@ -101,13 +101,16 @@ es_franquiciado = True if tipo_cluster == 'Candidatos (franquicias)' else False
 
 df_filtrado_tipo = df[df['es_franquiciado'] == es_franquiciado]
 
-marcas_disponibles = df_filtrado_tipo['title'].unique().tolist()
-marcas_seleccionadas = st.multiselect("Seleccioná una o más marcas", marcas_disponibles, default=marcas_disponibles)
-df_filtrado = df_filtrado_tipo[df_filtrado_tipo['title'].isin(marcas_seleccionadas)]
+marcas_disponibles = sorted(df_filtrado_tipo['title'].unique().tolist())
+marcas_seleccionadas = st.multiselect("Seleccioná una o más marcas", marcas_disponibles)
+if marcas_seleccionadas:
+    df_filtrado = df_filtrado_tipo[df_filtrado_tipo['title'].isin(marcas_seleccionadas)]
+else:
+    df_filtrado = df_filtrado_tipo.copy()
 
 # --- FILTRO POR KEYWORD ---
-keywords_disponibles = (
-    df_filtrado['keyword']
+keywords_disponibles = sorted(
+    df_filtrado_tipo['keyword']
     .dropna()
     .astype(str)
     .str.strip()
@@ -115,8 +118,7 @@ keywords_disponibles = (
     .unique()
     .tolist()
 )
-
-keywords_seleccionadas = st.multiselect("Filtrar por una o más keywords", keywords_disponibles, default=keywords_disponibles)
+keywords_seleccionadas = st.multiselect("Filtrar por una o más keywords", keywords_disponibles)
 if keywords_seleccionadas:
     df_filtrado = df_filtrado[df_filtrado['keyword'].str.lower().str.strip().isin(keywords_seleccionadas)]
 
@@ -160,7 +162,7 @@ else:
         st.info("No existen columnas 'reviews' o 'stars' en el CSV.")
 
 # --- VISUALIZACIÓN SEGÚN KEYWORDS SELECCIONADAS ---
-if keywords_seleccionadas and len(keywords_seleccionadas) < len(keywords_disponibles):
+if keywords_seleccionadas:
     st.markdown("### 📊 Top 10 marcas para las keywords seleccionadas")
     top_marcas = (
         df_filtrado['title']
