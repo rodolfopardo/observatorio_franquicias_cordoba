@@ -180,10 +180,10 @@ if keywords_seleccionadas:
         .value_counts(normalize=True)
         .mul(100)
         .reset_index()
-        .rename(columns={'index': 'Marca', 'title': 'Porcentaje'})
-        .sort_values(by='Porcentaje', ascending=False)
-        .head(10)
-    )
+        )
+    top_marcas.columns = ['Marca', 'Porcentaje']
+    top_marcas = top_marcas.sort_values(by='Porcentaje', ascending=False).head(10)
+    
     fig_bar = px.bar(
         top_marcas,
         y='Marca',
