@@ -179,6 +179,7 @@ if keywords_seleccionadas:
         df_filtrado['title']
         .value_counts(normalize=True)
         .mul(100)
+        .round(1)
         .reset_index()
         )
     top_marcas.columns = ['Marca', 'Porcentaje']
