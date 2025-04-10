@@ -220,7 +220,8 @@ else:
 st.markdown("### 📋 Tabla final con todos los datos")
 columnas_a_excluir = [
     'client', 'accountName', 'locationId', 'locationName', 'locationCity',
-    'locationState', 'type', 'createdAt', 'title_normalizado', 'es_franquiciado'
+    'locationState', 'type', 'createdAt', 'title_normalizado', 'es_franquiciado',
+    'normalized_title', 'processDate', 'directory'
 ]
 df_final = df_filtrado.drop(columns=[c for c in columnas_a_excluir if c in df_filtrado.columns], errors='ignore').drop_duplicates(subset=['addressPreview'])
 if 'stars' in df_final.columns:
