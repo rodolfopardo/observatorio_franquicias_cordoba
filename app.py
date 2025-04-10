@@ -171,36 +171,65 @@ else:
     else:
         st.info("No existen columnas 'reviews' o 'stars' en el CSV.")
 
-# --- VISUALIZACIÓN DE KEYWORDS ---
-st.markdown("### 🌞 Visualización jerárquica de keywords (Sunburst optimizado)")
-
-if 'keyword' in df_filtrado.columns:
-    keywords = df_filtrado['keyword'].dropna().astype(str).str.strip().str.lower()
-    top_keywords = Counter(keywords).most_common(10)
+# --- VISUALIZACIÓN DE KEYWORDS O DISTRIBUCIÓN DE MARCAS SEGÚN KEYWORD ---
+if keyword_seleccionada == "Todas":
+    st.markdown("### 🌞 Visualización jerárquica de keywords (Sunburst optimizado)")
     
-    if top_keywords:
-        labels = [kw for kw, _ in top_keywords]
-        values = [v for _, v in top_keywords]
-        parents = [''] * len(labels)
+    if 'keyword' in df_filtrado.columns:
+        keywords = df_filtrado['keyword'].dropna().astype(str).str.strip().str.lower()
+        top_keywords = Counter(keywords).most_common(10)
+        
+        if top_keywords:
+            labels = [kw for kw, _ in top_keywords]
+            values = [v for _, v in top_keywords]
+            parents = [''] * len(labels)
 
-        fig = go.Figure(go.Sunburst(
-            labels=labels,
-            parents=parents,
-            values=values,
-            branchvalues="total",
-            textinfo="label+value+percent entry",
-            insidetextorientation='radial',
-            hovertemplate='<b>%{label}</b><br>Frecuencia: %{value}<br>%{percentEntry:.1%}',
-        ))
+            fig = go.Figure(go.Sunburst(
+                labels=labels,
+                parents=parents,
+                values=values,
+                branchvalues="total",
+                textinfo="label+value+percent entry",
+                insidetextorientation='radial',
+                hovertemplate='<b>%{label}</b><br>Frecuencia: %{value}<br>%{percentEntry:.1%}',
+            ))
 
-        fig.update_layout(
-            title="Top 10 keywords más frecuentes",
-            margin=dict(t=50, l=0, r=0, b=0),
-            height=550,
-            uniformtext=dict(minsize=12, mode='show')
-        )
+            fig.update_layout(
+                title="Top 10 keywords más frecuentes",
+                margin=dict(t=50, l=0, r=0, b=0),
+                height=550,
+                uniformtext=dict(minsize=12, mode='show')
+            )
 
-        st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True)
+
+else:
+    st.markdown("### 📈 Participación de marcas para la keyword seleccionada")
+
+    marcas_keyword = (
+        df_filtrado['title']
+        .value_counts(normalize=True)
+        .mul(100)
+        .reset_index()
+        .rename(columns={'index': 'Marca', 'title': 'Porcentaje'})
+        .sort_values(by='Porcentaje', ascending=False)
+    )
+
+    fig_bar = px.bar(
+        marcas_keyword,
+        x='Marca',
+        y='Porcentaje',
+        text='Porcentaje',
+        labels={'Porcentaje': '% de negocios con esta keyword'},
+        title=f"% de participación por marca para la keyword: '{keyword_seleccionada}'"
+    )
+    fig_bar.update_layout(
+        height=500,
+        xaxis_tickangle=-45,
+        yaxis_ticksuffix="%",
+        title_font_size=20
+    )
+    st.plotly_chart(fig_bar, use_container_width=True)
 
 # --- TABLA FINAL CON FILTROS APLICADOS ---
 st.markdown("### 📋 Tabla final con todos los datos")
