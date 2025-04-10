@@ -101,19 +101,9 @@ es_franquiciado = True if tipo_cluster == 'Candidatos (franquicias)' else False
 
 df_filtrado_tipo = df[df['es_franquiciado'] == es_franquiciado]
 
-marcas_disponibles = (
-    df_filtrado_tipo['title']
-    .value_counts()
-    .sort_values(ascending=False)
-    .index
-    .tolist()
-)
-
-marca_seleccionada = st.selectbox("Seleccioná una marca", ["Todas"] + marcas_disponibles)
-if marca_seleccionada != "Todas":
-    df_filtrado = df_filtrado_tipo[df_filtrado_tipo['title'] == marca_seleccionada]
-else:
-    df_filtrado = df_filtrado_tipo.copy()
+marcas_disponibles = df_filtrado_tipo['title'].unique().tolist()
+marcas_seleccionadas = st.multiselect("Seleccioná una o más marcas", marcas_disponibles, default=marcas_disponibles)
+df_filtrado = df_filtrado_tipo[df_filtrado_tipo['title'].isin(marcas_seleccionadas)]
 
 # --- FILTRO POR KEYWORD ---
 keywords_disponibles = (
@@ -122,15 +112,13 @@ keywords_disponibles = (
     .astype(str)
     .str.strip()
     .str.lower()
-    .value_counts()
-    .sort_values(ascending=False)
-    .index
+    .unique()
     .tolist()
 )
 
-keyword_seleccionada = st.selectbox("Filtrar por keyword", ["Todas"] + keywords_disponibles)
-if keyword_seleccionada != "Todas":
-    df_filtrado = df_filtrado[df_filtrado['keyword'].str.lower().str.strip() == keyword_seleccionada]
+keywords_seleccionadas = st.multiselect("Filtrar por una o más keywords", keywords_disponibles, default=keywords_disponibles)
+if keywords_seleccionadas:
+    df_filtrado = df_filtrado[df_filtrado['keyword'].str.lower().str.strip().isin(keywords_seleccionadas)]
 
 # --- SECCIÓN TOP 10 ---
 st.markdown("### Top 10 negocios destacados")
@@ -171,19 +159,38 @@ else:
     else:
         st.info("No existen columnas 'reviews' o 'stars' en el CSV.")
 
-# --- VISUALIZACIÓN SEGÚN KEYWORD ---
-if keyword_seleccionada == "Todas":
+# --- VISUALIZACIÓN SEGÚN KEYWORDS SELECCIONADAS ---
+if keywords_seleccionadas and len(keywords_seleccionadas) < len(keywords_disponibles):
+    st.markdown("### 📊 Top 10 marcas para las keywords seleccionadas")
+    top_marcas = (
+        df_filtrado['title']
+        .value_counts(normalize=True)
+        .mul(100)
+        .reset_index()
+        .rename(columns={'index': 'Marca', 'title': 'Porcentaje'})
+        .sort_values(by='Porcentaje', ascending=False)
+        .head(10)
+    )
+    fig_bar = px.bar(
+        top_marcas,
+        y='Marca',
+        x='Porcentaje',
+        orientation='h',
+        text='Porcentaje',
+        labels={'Porcentaje': '% de negocios'},
+        title='Top 10 marcas con mayor presencia en las keywords seleccionadas'
+    )
+    fig_bar.update_layout(yaxis={'categoryorder':'total ascending'}, height=600)
+    st.plotly_chart(fig_bar, use_container_width=True)
+else:
     st.markdown("### 🌞 Visualización jerárquica de keywords (Sunburst optimizado)")
-
     if 'keyword' in df_filtrado.columns:
         keywords = df_filtrado['keyword'].dropna().astype(str).str.strip().str.lower()
         top_keywords = Counter(keywords).most_common(10)
-
         if top_keywords:
             labels = [kw for kw, _ in top_keywords]
             values = [v for _, v in top_keywords]
             parents = [''] * len(labels)
-
             fig = go.Figure(go.Sunburst(
                 labels=labels,
                 parents=parents,
@@ -191,43 +198,10 @@ if keyword_seleccionada == "Todas":
                 branchvalues="total",
                 textinfo="label+value+percent entry",
                 insidetextorientation='radial',
-                hovertemplate='<b>%{label}</b><br>Frecuencia: %{value}<br>%{percentEntry:.1%}',
+                hovertemplate='<b>%{label}</b><br>Frecuencia: %{value}<br>%{percentEntry:.1%}'
             ))
-
-            fig.update_layout(
-                title="Top 10 keywords más frecuentes",
-                margin=dict(t=50, l=0, r=0, b=0),
-                height=550,
-                uniformtext=dict(minsize=12, mode='show')
-            )
-
+            fig.update_layout(title="Top 10 keywords más frecuentes", margin=dict(t=50, l=0, r=0, b=0), height=550)
             st.plotly_chart(fig, use_container_width=True)
-else:
-    st.markdown("### 📈 Participación de marcas para la keyword seleccionada")
-
-    marcas_keyword = (
-        df_filtrado['title']
-        .value_counts(normalize=True)
-        .mul(100)
-        .reset_index()
-    )
-    marcas_keyword.columns = ['Marca', 'Porcentaje']
-
-    fig_bar = px.bar(
-        marcas_keyword,
-        x='Marca',
-        y='Porcentaje',
-        text='Porcentaje',
-        labels={'Porcentaje': '% de negocios con esta keyword'},
-        title=f"% de participación por marca para la keyword: '{keyword_seleccionada}'"
-    )
-    fig_bar.update_layout(
-        height=500,
-        xaxis_tickangle=-45,
-        yaxis_ticksuffix="%",
-        title_font_size=20
-    )
-    st.plotly_chart(fig_bar, use_container_width=True)
 
 # --- TABLA FINAL CON FILTROS APLICADOS ---
 st.markdown("### 📋 Tabla final con todos los datos")
