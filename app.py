@@ -216,10 +216,17 @@ else:
             fig.update_layout(title="Top 10 keywords más frecuentes", margin=dict(t=50, l=0, r=0, b=0), height=550)
             st.plotly_chart(fig, use_container_width=True)
 
-# --- TABLA FINAL CON FILTROS APLICADOS ---
+# --- TABLA FINAL ---
 st.markdown("### 📋 Tabla final con todos los datos")
-df_final = df_filtrado.drop_duplicates(subset=['addressPreview'])
+columnas_a_excluir = [
+    'client', 'accountName', 'locationId', 'locationName', 'locationCity',
+    'locationState', 'type', 'createdAt', 'title_normalizado', 'es_franquiciado'
+]
+df_final = df_filtrado.drop(columns=[c for c in columnas_a_excluir if c in df_filtrado.columns], errors='ignore').drop_duplicates(subset=['addressPreview'])
+if 'stars' in df_final.columns:
+    df_final['stars'] = pd.to_numeric(df_final['stars'], errors='coerce').round(2)
 st.dataframe(df_final, use_container_width=True)
+st.download_button("📥 Descargar tabla filtrada", df_final.to_csv(index=False).encode('utf-8'), "franquicias_filtradas.csv", "text/csv")
 
 csv = df_final.to_csv(index=False).encode('utf-8')
 st.download_button("📥 Descargar tabla filtrada", csv, "franquicias_filtradas.csv", "text/csv")
