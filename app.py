@@ -210,9 +210,8 @@ else:
         .value_counts(normalize=True)
         .mul(100)
         .reset_index()
-        .rename(columns={'index': 'Marca', 'title': 'Porcentaje'})
-        .sort_values(by='Porcentaje', ascending=False)
     )
+    marcas_keyword.columns = ['Marca', 'Porcentaje']
 
     fig_bar = px.bar(
         marcas_keyword,
@@ -236,7 +235,7 @@ df_final = df_filtrado.drop_duplicates(subset=['addressPreview'])
 st.dataframe(df_final, use_container_width=True)
 
 csv = df_final.to_csv(index=False).encode('utf-8')
-st.download_button("📅 Descargar tabla filtrada", csv, "franquicias_filtradas.csv", "text/csv")
+st.download_button("📥 Descargar tabla filtrada", csv, "franquicias_filtradas.csv", "text/csv")
 
 # --- LOGOUT ---
 st.markdown("---")
