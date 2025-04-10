@@ -171,14 +171,14 @@ else:
     else:
         st.info("No existen columnas 'reviews' o 'stars' en el CSV.")
 
-# --- VISUALIZACIÓN DE KEYWORDS O DISTRIBUCIÓN DE MARCAS SEGÚN KEYWORD ---
+# --- VISUALIZACIÓN SEGÚN KEYWORD ---
 if keyword_seleccionada == "Todas":
     st.markdown("### 🌞 Visualización jerárquica de keywords (Sunburst optimizado)")
-    
+
     if 'keyword' in df_filtrado.columns:
         keywords = df_filtrado['keyword'].dropna().astype(str).str.strip().str.lower()
         top_keywords = Counter(keywords).most_common(10)
-        
+
         if top_keywords:
             labels = [kw for kw, _ in top_keywords]
             values = [v for _, v in top_keywords]
@@ -202,7 +202,6 @@ if keyword_seleccionada == "Todas":
             )
 
             st.plotly_chart(fig, use_container_width=True)
-
 else:
     st.markdown("### 📈 Participación de marcas para la keyword seleccionada")
 
@@ -237,7 +236,7 @@ df_final = df_filtrado.drop_duplicates(subset=['addressPreview'])
 st.dataframe(df_final, use_container_width=True)
 
 csv = df_final.to_csv(index=False).encode('utf-8')
-st.download_button("📥 Descargar tabla filtrada", csv, "franquicias_filtradas.csv", "text/csv")
+st.download_button("📅 Descargar tabla filtrada", csv, "franquicias_filtradas.csv", "text/csv")
 
 # --- LOGOUT ---
 st.markdown("---")
