@@ -229,7 +229,6 @@ st.dataframe(df_final, use_container_width=True)
 st.download_button("📥 Descargar tabla filtrada", df_final.to_csv(index=False).encode('utf-8'), "franquicias_filtradas.csv", "text/csv")
 
 csv = df_final.to_csv(index=False).encode('utf-8')
-st.download_button("📥 Descargar tabla filtrada", csv, "franquicias_filtradas.csv", "text/csv")
 
 # --- LOGOUT ---
 st.markdown("---")
