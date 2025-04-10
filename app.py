@@ -16,7 +16,7 @@ USUARIOS_VALIDOS = {
 
 def login():
     st.image("https://media.licdn.com/dms/image/v2/C4E0BAQEI7gHrMu33ug/company-logo_200_200/company-logo_200_200/0/1630567809960/search_mas_logo?e=1749686400&v=beta&t=gX3L1x9Yl9Xg8iASJ1_mil9GNfa6-hLM9JglCP2b3mo", width=200)
-    st.title("🔐 Observatorio de Franquicias – Córdoba")
+    st.title("Observatorio de Franquicias – Córdoba")
     user = st.text_input("Usuario")
     password = st.text_input("Contraseña", type="password")
     if st.button("Iniciar sesión"):
@@ -36,7 +36,7 @@ col_logo, col_title = st.columns([1, 5])
 with col_logo:
     st.image("https://media.licdn.com/dms/image/v2/C4E0BAQEI7gHrMu33ug/company-logo_200_200/company-logo_200_200/0/1630567809960/search_mas_logo?e=1749686400&v=beta&t=gX3L1x9Yl9Xg8iASJ1_mil9GNfa6-hLM9JglCP2b3mo", width=120)
 with col_title:
-    st.title("📊 Observatorio de Franquicias – Córdoba")
+    st.title("Observatorio de Franquicias – Córdoba")
 
 st.sidebar.markdown(f"👤 Sesión iniciada como: `{st.session_state.get('user', '')}`")
 
@@ -144,7 +144,7 @@ if es_franquiciado:
         .sort_values(by='cantidad_direcciones', ascending=False)
         .head(10)
     )
-    st.markdown("#### 🏪 Candidatos con más direcciones")
+    st.markdown("#### Candidatos a franquicia con más direcciones")
     st.dataframe(top_direcciones[['title', 'cantidad_direcciones']], use_container_width=True)
 
 else:
@@ -165,7 +165,7 @@ else:
                 .sort_values(by=['reviews', 'stars'], ascending=[False, False])
                 .head(10)
             )
-            st.markdown("#### 🌟 Negocios comunes con más reviews")
+            st.markdown("#### Negocios comunes con más reviews")
             st.dataframe(top_reviews[['title', 'reviews', 'stars']], use_container_width=True)
         else:
             st.info("No hay datos válidos de 'reviews' y 'stars' para generar el ranking.")
@@ -174,7 +174,7 @@ else:
 
 # --- VISUALIZACIÓN SEGÚN KEYWORDS SELECCIONADAS ---
 if keywords_seleccionadas:
-    st.markdown("### 📊 Top 10 marcas para las keywords seleccionadas")
+    st.markdown("### Top 10 negocios frente a keywords seleccionadas")
     top_marcas = (
         df_filtrado['title']
         .value_counts(normalize=True)
@@ -196,7 +196,7 @@ if keywords_seleccionadas:
     fig_bar.update_layout(yaxis={'categoryorder':'total ascending'}, height=600)
     st.plotly_chart(fig_bar, use_container_width=True)
 else:
-    st.markdown("### 🌞 Visualización jerárquica de keywords (Sunburst optimizado)")
+    st.markdown("### Visualización jerárquica de keywords")
     if 'keyword' in df_filtrado.columns:
         keywords = df_filtrado['keyword'].dropna().astype(str).str.strip().str.lower()
         top_keywords = Counter(keywords).most_common(10)
@@ -217,7 +217,7 @@ else:
             st.plotly_chart(fig, use_container_width=True)
 
 # --- TABLA FINAL ---
-st.markdown("### 📋 Tabla final con todos los datos")
+st.markdown("### Tabla final con todos los datos")
 columnas_a_excluir = [
     'client', 'accountName', 'locationId', 'locationName', 'locationCity',
     'locationState', 'type', 'createdAt', 'title_normalizado', 'es_franquiciado',
