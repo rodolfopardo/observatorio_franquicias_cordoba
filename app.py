@@ -138,12 +138,12 @@ st.markdown("### Top 10 negocios destacados")
 
 if es_franquiciado:
     top_direcciones = (
-        df_filtrado.groupby('title')
-        .size()
-        .reset_index(name='cantidad_direcciones')
-        .sort_values(by='cantidad_direcciones', ascending=False)
-        .head(10)
-    )
+    df_filtrado.groupby('title')['addressPreview']
+    .nunique()
+    .reset_index(name='cantidad_direcciones')
+    .sort_values(by='cantidad_direcciones', ascending=False)
+    .head(10)
+)
     st.markdown("#### Candidatos a franquicia con más direcciones")
     st.dataframe(top_direcciones[['title', 'cantidad_direcciones']], use_container_width=True)
 
