@@ -43,7 +43,7 @@ st.sidebar.markdown(f"👤 Sesión iniciada como: `{st.session_state.get('user',
 @st.cache_data
 def cargar_datos():
     df = pd.read_csv("https://drive.google.com/uc?export=download&id=19yEmueLePXiPZVV9fYYQWbLhMP9N6AzO")
-    df['title'] = df['title'].astype(str)
+    df['title'] = df['title_limpio'].astype(str)
     df['addressPreview'] = df['addressPreview'].astype(str)
     df = df[df['addressPreview'].str.contains(r'c[oó]rdoba', case=False, na=False)]
 
