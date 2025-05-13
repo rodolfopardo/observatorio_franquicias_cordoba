@@ -122,22 +122,24 @@ fig1.update_layout(
     margin=dict(t=40, l=20, r=20, b=20)
 )
 
-# --- GRÁFICO 2: TREEMAP RUBROS ---
-st.markdown(f"🎯 Filtrando {len(df_filtrado)} comercios en total")
-st.markdown(f"🔍 Marcas seleccionadas: {marcas_seleccionadas if marcas_seleccionadas else 'Todas'}")
-st.markdown(f"🔍 Rubros seleccionados: {rubros_seleccionadas if rubros_seleccionadas else 'Todos'}")
-st.markdown(f"🔍 Filtro marcas populares: {'Sí' if filtrar_populares == 'Sí' else 'No'}")
-# --- GRÁFICO 2: TREEMAP RUBROS ---
-top_rubros = df_filtrado["RUBRO"].value_counts().head(20).reset_index()
-top_rubros.columns = ["RUBRO", "CANTIDAD"]
+# --- GRÁFICO 2: TREEMAP RUBROS (recalculado correctamente) ---
+rubros_conteo = (
+    df_filtrado.groupby("RUBRO")["DIRECCIÓN"]
+    .nunique()
+    .reset_index(name="CANTIDAD")
+    .sort_values(by="CANTIDAD", ascending=False)
+    .head(20)
+)
+
 fig2 = px.treemap(
-    top_rubros,
+    rubros_conteo,
     path=["RUBRO"],
     values="CANTIDAD",
     title="Top 20 - Comercios por Tipo"
 )
 fig2.update_traces(textinfo="label+value")
 fig2.update_layout(margin=dict(t=40, l=20, r=20, b=20), height=500)
+
 
 # --- VISUALIZACIÓN VERTICAL ---
 st.plotly_chart(fig1, use_container_width=True)
