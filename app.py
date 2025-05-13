@@ -123,6 +123,8 @@ fig1.update_layout(
     yaxis={'categoryorder': 'total ascending'},
     margin=dict(t=40, l=20, r=20, b=20)
 )
+fig1.update_traces(textfont_size=16) 
+
 
 # --- GRÁFICO 2: TREEMAP RUBROS (recalculado correctamente) ---
 
