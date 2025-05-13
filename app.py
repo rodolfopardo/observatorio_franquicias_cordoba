@@ -49,54 +49,57 @@ def cargar_datos():
     df = df.drop_duplicates(subset=["DIRECCIÓN"])
     return df
 
-df = cargar_datos()
-
-# --- ORDEN PARA FILTROS ---
-orden_marcas = df["COMERCIO"].value_counts().reset_index()
-orden_marcas.columns = ["COMERCIO", "CANTIDAD"]
-
-orden_rubros = df["RUBRO"].value_counts().reset_index()
-orden_rubros.columns = ["RUBRO", "CANTIDAD"]
-
-# --- FILTROS MULTI + POPULARES ---
 import re
 
-st.sidebar.title("Filtros")
+df = cargar_datos()
 
-comercios_ordenados = orden_marcas["COMERCIO"].tolist()
-rubros_ordenados = orden_rubros["RUBRO"].tolist()
-
-# MULTISELECCIÓN
-marcas_seleccionadas = st.sidebar.multiselect("MARCA", options=comercios_ordenados, default=[])
-rubros_seleccionados = st.sidebar.multiselect("RUBRO", options=rubros_ordenados, default=[])
-
-# FILTRO MARCAS POPULARES
-st.sidebar.markdown("Filtro inteligente de datos")
+# --- FILTRO MARCAS POPULARES APLICADO PRIMERO ---
+st.sidebar.markdown("### Filtro inteligente de datos")
 filtrar_populares = st.sidebar.radio("¿Filtrar marcas populares?", ["No", "Sí"], horizontal=True)
 
 # Lista de patrones populares
 patrones_conocidos = [
     "grido", "mcdonald", "burger king", "secco", "extra supermercado",
-    "jumbo", "carrefour", "lavarap", "pintecord", "farmacity", "freddo",
+    "jumbo", "carrefour", "laverap", "pintecord", "farmacity", "freddo",
     "naranja", "sodimac", "tupi", "easy", "tarjeta naranja", "galicia",
-    "banco de la nacion", "bancor", "western union", "pago facil", "rapipago"
+    "banco de la nacion", "bancor", "western union", "pago facil", "rapipago",
+    "shell", "eyelit", "banco de cordoba"
 ]
 
 def es_marca_conocida(nombre):
     nombre = str(nombre).lower()
     return any(re.search(pat, nombre) for pat in patrones_conocidos)
 
-# APLICAR FILTROS
-df_filtrado = df.copy()
+# Aplicar filtro primero para que afecte los filtros siguientes
+df_base = df.copy()
+if filtrar_populares == "Sí":
+    df_base = df_base[~df_base["COMERCIO"].apply(es_marca_conocida)]
+
+# --- ORDEN PARA FILTROS MULTI ---
+orden_marcas = df_base["COMERCIO"].value_counts().reset_index()
+orden_marcas.columns = ["COMERCIO", "CANTIDAD"]
+
+orden_rubros = df_base["RUBRO"].value_counts().reset_index()
+orden_rubros.columns = ["RUBRO", "CANTIDAD"]
+
+# --- FILTROS MULTISELECCIÓN ---
+st.sidebar.title("Filtros")
+
+comercios_ordenados = orden_marcas["COMERCIO"].tolist()
+rubros_ordenados = orden_rubros["RUBRO"].tolist()
+
+marcas_seleccionadas = st.sidebar.multiselect("MARCA", options=comercios_ordenados, default=[])
+rubros_seleccionadas = st.sidebar.multiselect("RUBRO", options=rubros_ordenados, default=[])
+
+# --- APLICAR FILTROS COMBINADOS ---
+df_filtrado = df_base.copy()
 
 if marcas_seleccionadas:
     df_filtrado = df_filtrado[df_filtrado["COMERCIO"].isin(marcas_seleccionadas)]
 
-if rubros_seleccionados:
-    df_filtrado = df_filtrado[df_filtrado["RUBRO"].isin(rubros_seleccionados)]
+if rubros_seleccionadas:
+    df_filtrado = df_filtrado[df_filtrado["RUBRO"].isin(rubros_seleccionadas)]
 
-if filtrar_populares == "Sí":
-    df_filtrado = df_filtrado[~df_filtrado["COMERCIO"].apply(es_marca_conocida)]
 
 
 # --- KPI PRINCIPAL ---
