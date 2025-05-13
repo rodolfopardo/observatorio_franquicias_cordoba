@@ -9,7 +9,8 @@ USUARIOS_VALIDOS = {
     "rodolfopardo": "1234",
     "jp": "1234",
     "brian": "1234",
-    "invitado": "searchmas"
+    "invitado": "searchmas",
+    "observatorio": "franquicia"
 }
 
 def login():
