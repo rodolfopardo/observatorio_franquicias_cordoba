@@ -71,8 +71,8 @@ marcas_seleccionadas = st.sidebar.multiselect("MARCA", options=comercios_ordenad
 rubros_seleccionados = st.sidebar.multiselect("RUBRO", options=rubros_ordenados, default=[])
 
 # FILTRO MARCAS POPULARES
-st.sidebar.markdown("¿Querés ver solo marcas conocidas o populares?")
-filtrar_populares = st.sidebar.radio("Filtrar marcas populares", ["No", "Sí"], horizontal=True)
+st.sidebar.markdown("Filtro inteligente de datos")
+filtrar_populares = st.sidebar.radio("¿Filtrar marcas populares?", ["No", "Sí"], horizontal=True)
 
 # Lista de patrones populares
 patrones_conocidos = [
@@ -96,8 +96,6 @@ if rubros_seleccionados:
     df_filtrado = df_filtrado[df_filtrado["RUBRO"].isin(rubros_seleccionados)]
 
 if filtrar_populares == "Sí":
-    df_filtrado = df_filtrado[df_filtrado["COMERCIO"].apply(es_marca_conocida)]
-else:
     df_filtrado = df_filtrado[~df_filtrado["COMERCIO"].apply(es_marca_conocida)]
 
 
