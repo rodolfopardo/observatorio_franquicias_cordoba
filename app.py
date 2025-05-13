@@ -51,38 +51,40 @@ def cargar_datos():
 
 import re
 
+import re
+
+# --- CARGA Y FILTRO DE DATOS BASE ---
 df = cargar_datos()
 
-# --- FILTRO MARCAS POPULARES APLICADO PRIMERO ---
+# --- FILTRO DE MARCAS POPULARES ---
 st.sidebar.markdown("### Filtro inteligente de datos")
 filtrar_populares = st.sidebar.radio("¿Filtrar marcas populares?", ["No", "Sí"], horizontal=True)
 
 # Lista de patrones populares
 patrones_conocidos = [
     "grido", "mcdonald", "burger king", "secco", "extra supermercado",
-    "jumbo", "carrefour", "laverap", "pintecord", "farmacity", "freddo",
+    "jumbo", "carrefour", "lavarap", "pintecord", "farmacity", "freddo",
     "naranja", "sodimac", "tupi", "easy", "tarjeta naranja", "galicia",
-    "banco de la nacion", "bancor", "western union", "pago facil", "rapipago",
-    "shell", "eyelit", "banco de cordoba"
+    "banco de la nacion", "bancor", "western union", "pago facil", "rapipago"
 ]
 
 def es_marca_conocida(nombre):
     nombre = str(nombre).lower()
     return any(re.search(pat, nombre) for pat in patrones_conocidos)
 
-# Aplicar filtro primero para que afecte los filtros siguientes
+# Aplicar el filtro popular primero para generar base real
 df_base = df.copy()
 if filtrar_populares == "Sí":
     df_base = df_base[~df_base["COMERCIO"].apply(es_marca_conocida)]
 
-# --- ORDEN PARA FILTROS MULTI ---
+# --- ORDEN PARA FILTROS (ya sobre df_base) ---
 orden_marcas = df_base["COMERCIO"].value_counts().reset_index()
 orden_marcas.columns = ["COMERCIO", "CANTIDAD"]
 
 orden_rubros = df_base["RUBRO"].value_counts().reset_index()
 orden_rubros.columns = ["RUBRO", "CANTIDAD"]
 
-# --- FILTROS MULTISELECCIÓN ---
+# --- FILTROS MULTI ---
 st.sidebar.title("Filtros")
 
 comercios_ordenados = orden_marcas["COMERCIO"].tolist()
@@ -91,7 +93,7 @@ rubros_ordenados = orden_rubros["RUBRO"].tolist()
 marcas_seleccionadas = st.sidebar.multiselect("MARCA", options=comercios_ordenados, default=[])
 rubros_seleccionadas = st.sidebar.multiselect("RUBRO", options=rubros_ordenados, default=[])
 
-# --- APLICAR FILTROS COMBINADOS ---
+# --- APLICAR FILTROS MULTI SOBRE BASE FILTRADA ---
 df_filtrado = df_base.copy()
 
 if marcas_seleccionadas:
@@ -99,7 +101,6 @@ if marcas_seleccionadas:
 
 if rubros_seleccionadas:
     df_filtrado = df_filtrado[df_filtrado["RUBRO"].isin(rubros_seleccionadas)]
-
 
 
 # --- KPI PRINCIPAL ---
