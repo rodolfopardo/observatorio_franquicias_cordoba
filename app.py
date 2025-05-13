@@ -13,7 +13,7 @@ USUARIOS_VALIDOS = {
 }
 
 def login():
-    st.image("https://media.licdn.com/dms/image/v2/C4E0BAQEI7gHrMu33ug/company-logo_200_200/company-logo_200_200/0/1630567809960/search_mas_logo", width=200)
+    st.image("https://media.licdn.com/dms/image/v2/C4E0BAQEI7gHrMu33ug/company-logo_200_200/company-logo_200_200/0/1630567809960/search_mas_logo?e=2147483647&v=beta&t=XUaWkB-j3eCKUWCuySIzXe5s42ScA4dstIVrYVbgl4s", width=200)
     st.title("Observatorio de Comercios – Córdoba")
     user = st.text_input("Usuario")
     password = st.text_input("Contraseña", type="password")
