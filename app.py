@@ -60,12 +60,13 @@ df = cargar_datos()
 st.sidebar.markdown("### Filtro inteligente de datos")
 filtrar_populares = st.sidebar.radio("¿Filtrar marcas populares?", ["No", "Sí"], horizontal=True)
 
-# Lista de patrones populares
+# Lista de comercios populares
 patrones_conocidos = [
     "grido", "mcdonald", "burger king", "secco", "extra supermercado",
     "jumbo", "carrefour", "lavarap", "pintecord", "farmacity", "freddo",
     "naranja", "sodimac", "tupi", "easy", "tarjeta naranja", "galicia",
-    "banco de la nacion", "bancor", "western union", "pago facil", "rapipago"
+    "banco de la nacion", "bancor", "western union", "pago facil", "rapipago",
+    "laverap", "shell", "ypf", "PIZZERIA popular"
 ]
 
 def es_marca_conocida(nombre):
@@ -107,7 +108,7 @@ if rubros_seleccionadas:
 st.metric("🧾 Comercios analizados", value=f"{len(df_filtrado):,}")
 
 # --- GRÁFICO 1: BARRAS COMERCIO ---
-top_comercios = df_filtrado["COMERCIO"].value_counts().head(15).reset_index()
+top_comercios = df_filtrado["COMERCIO"].value_counts().head(20).reset_index()
 top_comercios.columns = ["COMERCIO", "CANTIDAD"]
 fig1 = px.bar(
     top_comercios,
@@ -115,7 +116,7 @@ fig1 = px.bar(
     y="COMERCIO",
     orientation="h",
     text_auto=True,
-    title="Comercios por Marca"
+    title="Cantidad de direcciones por Marca"
 )
 fig1.update_layout(
     height=450,
@@ -153,7 +154,7 @@ st.plotly_chart(fig1, use_container_width=True)
 st.plotly_chart(fig2, use_container_width=True)
 
 # --- DETALLE TABLA ---
-st.markdown("### 📋 Detalle de comercios")
+st.markdown("### 📋 Detalles de comercios")
 st.dataframe(df_filtrado[["COMERCIO", "RUBRO", "DIRECCIÓN", "LOCALIDAD"]].sort_values(by="COMERCIO"), use_container_width=True)
 
 # --- DESCARGA CSV ---
