@@ -32,7 +32,7 @@ if 'logged_in' not in st.session_state:
 # --- ENCABEZADO ---
 col_logo, col_title = st.columns([1, 5])
 with col_logo:
-    st.image("https://media.licdn.com/dms/image/v2/C4E0BAQEI7gHrMu33ug/company-logo_200_200/company-logo_200_200/0/1630567809960/search_mas_logo", width=120)
+    st.image("https://media.licdn.com/dms/image/v2/C4E0BAQEI7gHrMu33ug/company-logo_200_200/company-logo_200_200/0/1630567809960/search_mas_logo?e=2147483647&v=beta&t=XUaWkB-j3eCKUWCuySIzXe5s42ScA4dstIVrYVbgl4s", width=120)
 with col_title:
     st.title("Observatorio de Comercios – Córdoba")
 
