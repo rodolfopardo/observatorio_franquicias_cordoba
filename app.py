@@ -123,8 +123,14 @@ fig1.update_layout(
 )
 
 # --- GRÁFICO 2: TREEMAP RUBROS (recalculado correctamente) ---
+
+df_rubros = df_filtrado.copy()
+if filtrar_populares == "Sí":
+    df_rubros = df_rubros[~df_rubros["COMERCIO"].apply(es_marca_conocida)]
+
+# Ahora sí: agrupamos por RUBRO solo con comercios filtrados
 rubros_conteo = (
-    df_filtrado.groupby("RUBRO")["DIRECCIÓN"]
+    df_rubros.groupby("RUBRO")["DIRECCIÓN"]
     .nunique()
     .reset_index(name="CANTIDAD")
     .sort_values(by="CANTIDAD", ascending=False)
