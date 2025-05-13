@@ -127,6 +127,7 @@ st.markdown(f"🎯 Filtrando {len(df_filtrado)} comercios en total")
 st.markdown(f"🔍 Marcas seleccionadas: {marcas_seleccionadas if marcas_seleccionadas else 'Todas'}")
 st.markdown(f"🔍 Rubros seleccionados: {rubros_seleccionadas if rubros_seleccionadas else 'Todos'}")
 st.markdown(f"🔍 Filtro marcas populares: {'Sí' if filtrar_populares == 'Sí' else 'No'}")
+# --- GRÁFICO 2: TREEMAP RUBROS ---
 top_rubros = df_filtrado["RUBRO"].value_counts().head(20).reset_index()
 top_rubros.columns = ["RUBRO", "CANTIDAD"]
 fig2 = px.treemap(
