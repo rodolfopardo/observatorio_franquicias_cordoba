@@ -124,6 +124,8 @@ fig1.update_layout(
     margin=dict(t=40, l=20, r=20, b=20)
 )
 fig1.update_traces(textfont_size=16) 
+fig1.update_traces(textposition='outside')
+
 
 
 # --- GRÁFICO 2: TREEMAP RUBROS (recalculado correctamente) ---
