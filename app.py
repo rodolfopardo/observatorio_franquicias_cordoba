@@ -120,7 +120,7 @@ fig1 = px.bar(
     title="Cantidad de direcciones por Marca"
 )
 fig1.update_layout(
-    height=450,
+    height=600,
     yaxis={'categoryorder': 'total ascending'},
     margin=dict(t=40, l=20, r=20, b=20)
 )
@@ -129,34 +129,11 @@ fig1.update_traces(textposition='outside')
 
 
 
-# --- GRÁFICO 2: TREEMAP RUBROS (recalculado correctamente) ---
-
-df_rubros = df_filtrado.copy()
-if filtrar_populares == "Sí":
-    df_rubros = df_rubros[~df_rubros["COMERCIO"].apply(es_marca_conocida)]
-
-# Ahora sí: agrupamos por RUBRO solo con comercios filtrados
-rubros_conteo = (
-    df_rubros.groupby("RUBRO")["DIRECCIÓN"]
-    .nunique()
-    .reset_index(name="CANTIDAD")
-    .sort_values(by="CANTIDAD", ascending=False)
-    .head(20)
-)
-
-fig2 = px.treemap(
-    rubros_conteo,
-    path=["RUBRO"],
-    values="CANTIDAD",
-    title="Top 20 - Comercios por Tipo"
-)
-fig2.update_traces(textinfo="label+value")
-fig2.update_layout(margin=dict(t=40, l=20, r=20, b=20), height=500)
 
 
 # --- VISUALIZACIÓN VERTICAL ---
 st.plotly_chart(fig1, use_container_width=True)
-st.plotly_chart(fig2, use_container_width=True)
+
 
 # --- DETALLE TABLA ---
 st.markdown("### 📋 Detalles de comercios")
