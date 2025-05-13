@@ -58,23 +58,51 @@ orden_marcas.columns = ["COMERCIO", "CANTIDAD"]
 orden_rubros = df["RUBRO"].value_counts().reset_index()
 orden_rubros.columns = ["RUBRO", "CANTIDAD"]
 
-# --- FILTROS ---
+# --- FILTROS MULTI + POPULARES ---
+import re
+
 st.sidebar.title("Filtros")
 
 comercios_ordenados = orden_marcas["COMERCIO"].tolist()
 rubros_ordenados = orden_rubros["RUBRO"].tolist()
 
-comercio_sel = st.sidebar.selectbox("MARCA", options=["Todas"] + comercios_ordenados)
-rubro_sel = st.sidebar.selectbox("RUBRO", options=["Todas"] + rubros_ordenados)
+# MULTISELECCIÓN
+marcas_seleccionadas = st.sidebar.multiselect("MARCA", options=comercios_ordenados, default=[])
+rubros_seleccionados = st.sidebar.multiselect("RUBRO", options=rubros_ordenados, default=[])
 
+# FILTRO MARCAS POPULARES
+st.sidebar.markdown("¿Querés ver solo marcas conocidas o populares?")
+filtrar_populares = st.sidebar.radio("Filtrar marcas populares", ["No", "Sí"], horizontal=True)
+
+# Lista de patrones populares
+patrones_conocidos = [
+    "grido", "mcdonald", "burger king", "secco", "extra supermercado",
+    "jumbo", "carrefour", "lavarap", "pintecord", "farmacity", "freddo",
+    "naranja", "sodimac", "tupi", "easy", "tarjeta naranja", "galicia",
+    "banco de la nacion", "bancor", "western union", "pago facil", "rapipago"
+]
+
+def es_marca_conocida(nombre):
+    nombre = str(nombre).lower()
+    return any(re.search(pat, nombre) for pat in patrones_conocidos)
+
+# APLICAR FILTROS
 df_filtrado = df.copy()
-if comercio_sel != "Todas":
-    df_filtrado = df_filtrado[df_filtrado["COMERCIO"] == comercio_sel]
-if rubro_sel != "Todas":
-    df_filtrado = df_filtrado[df_filtrado["RUBRO"] == rubro_sel]
+
+if marcas_seleccionadas:
+    df_filtrado = df_filtrado[df_filtrado["COMERCIO"].isin(marcas_seleccionadas)]
+
+if rubros_seleccionados:
+    df_filtrado = df_filtrado[df_filtrado["RUBRO"].isin(rubros_seleccionados)]
+
+if filtrar_populares == "Sí":
+    df_filtrado = df_filtrado[df_filtrado["COMERCIO"].apply(es_marca_conocida)]
+else:
+    df_filtrado = df_filtrado[~df_filtrado["COMERCIO"].apply(es_marca_conocida)]
+
 
 # --- KPI PRINCIPAL ---
-st.metric("🧾 Comercios", value=f"{len(df_filtrado):,}")
+st.metric("🧾 Comercios analizados", value=f"{len(df_filtrado):,}")
 
 # --- GRÁFICO 1: BARRAS COMERCIO ---
 top_comercios = df_filtrado["COMERCIO"].value_counts().head(15).reset_index()
@@ -110,7 +138,7 @@ st.plotly_chart(fig1, use_container_width=True)
 st.plotly_chart(fig2, use_container_width=True)
 
 # --- DETALLE TABLA ---
-st.markdown("### 📋 Detalle Comercios")
+st.markdown("### 📋 Detalle de comercios")
 st.dataframe(df_filtrado[["COMERCIO", "RUBRO", "DIRECCIÓN", "LOCALIDAD"]].sort_values(by="COMERCIO"), use_container_width=True)
 
 # --- DESCARGA CSV ---
